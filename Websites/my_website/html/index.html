@@ -1,0 +1,126 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Stats</title>
+</head>
+<link rel="stylesheet" 
+href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-
+ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+crossorigin="anonymous" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css">
+<body>
+    <header>
+        <div>
+            <h1>Football HQ</h1>S
+            <p>A website for all your footballing needs</p>
+        </div>
+    </header>
+    <div id="clock">8:10:45</div>
+    <script>
+        setInterval(showTime, 1000);
+        function showTime() {
+            let time = new Date();
+            let hour =
+                time.getHours();
+            let min =
+                time.getMinutes();
+            let sec =
+                time.getSeconds();
+            am_pm = "AM";
+        
+            if (hour >= 12) {
+                if (hour > 12)
+                    hour -= 12;
+                am_pm = "PM";
+            } else if (hour == 0) {
+                hr = 12;
+                am_pm = "AM";
+            }
+        
+            hour =
+                hour < 10
+                    ? "0" + hour
+                    : hour;
+            min =
+                min < 10
+                    ? "0" + min
+                    : min;
+            sec =
+                sec < 10
+                    ? "0" + sec
+                    : sec;
+        
+            let currentTime =
+                hour +
+                ":" +
+                min +
+                ":" +
+                sec +
+                am_pm;
+        
+            document.getElementById(
+                "clock"
+            ).innerHTML =
+                currentTime;
+        }
+        
+        showTime();
+    </script>
+    <nav class="navbar navbar-dark bg-primary">
+        <a class ="nav-link active" href="index.html">Home</a>
+        <a class ="nav-link active" href="facts.html">Facts</a>
+        <a class ="nav-link active" href="gallery.html">Gallery</a>
+        <a class ="nav-link active" href="videos.html">Videos</a>
+        <a class ="nav-link active" href="leagues.html">Home</a>
+        </nav>
+    <section> 
+      <table>
+            <tr>
+                <td>
+                   <img src="../images/Erling_Haaland_2023.jpg" alt="Erling Haaland" width="200" height="300">
+                </td>
+                <td>
+                    <img src="../images/Mohamed_Salah_2017.jpg" alt="Mo Salah" width="200" height="300">
+                </td>
+                <td>
+                    <img src="../images/Marcus_Rashford_2017.jpg" alt="Marcus Rashford" width="200" height="300">
+                </td>
+                <td>
+                    <img src="../images/Kyle_walker.jpg" alt="Kyle Walker" width="200" height="300">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <p class="font-weight-bold"> Football, the most popular sport on the planet, has many different competitions and players. Europe is the most advanced continent when it comes to football. Its top 5 leagues are:</p>
+                        <p>1. Premier league</p>
+                        <p>2. La Liga</p>
+                        <p>3. Serie A</p>
+                        <p>4. Bundesliga</p>
+                        <p>5. Eredivise</p>
+                        <p>Among the top players in the world are Erling Haaland, Mo salah and Marcus Rashford, who are shown above</p>
+                </td>
+            </tr>    
+      </table>
+      <h1>Here are the current 20 teams participating in the 2023/24 Premier League season</h1>
+      <ul id="county-list"></ul>
+      <h2>Here is the current Premier league table as of 30/11/2023</h2>
+      <h3 id ="clientName"></h3>
+      <h3 id ="clientName1"></h3>
+      <h3 id ="clientName2"></h3>
+      <h3 id ="clientName3"></h3>
+      <h3 id ="clientName4"></h3>
+<button onclick="darkMode()">Darkmode</button>
+<button onclick="lightMode()">LightMode</button>
+    </section>
+    <p class="font-weight-bold" <strong> "More coming soon"</strong><div class="p-3 mb-2 bg-primary text-white"></div></p>
+    <footer class="hidden-footer" id="footer">
+        <p>©2023 Created by Harry Delaney</p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDf
+L" crossorigin="anonymous"></script>
+<script src="../javascript/script.js"></script>
+</body>
+</html>
