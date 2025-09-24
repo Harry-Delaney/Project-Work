@@ -1,0 +1,219 @@
+model Library
+-- reduced version showing how to use satte machines for book class
+
+
+enum BookStatus { available, unavailable, onreserve, damaged}
+enum CopyStatus { onLoan, onShelf, onReserve, damaged}
+
+class Book
+    attributes
+        title : String
+        author : String
+        status : BookStatus init = #available
+        no_copies : Integer init = 2
+        no_onshelf : Integer init = 2
+	no_damaged : Integer init = 0 --used to track the number of damaged copies
+
+    operations
+        borrow()
+        begin
+            self.no_onshelf := self.no_onshelf - 1;
+            if (self.no_onshelf = 0 or self.no_damaged = self.no_copies) then
+                self.status := #unavailable
+            end
+        end
+
+        return() begin
+            self.no_onshelf := self.no_onshelf + 1;
+            if (self.no_onshelf > 0 and self.status = #unavailable) then
+                self.status := #available
+            end
+        end
+        post: no_onshelf = no_onshelf@pre + 1
+
+        reserve() begin
+            self.status := #onreserve
+        end
+
+        unreserve() begin
+            -- Logic to change status back from onreserve.
+            -- Should consider if any copies are now on shelf.
+            if (self.no_onshelf > 0) then
+                self.status := #available
+            else
+                self.status := #unavailable
+            end
+        end
+
+    statemachines
+        psm States
+        states
+            newTitle : initial
+            available         [no_onshelf > 0 and status <> #onreserve]
+            unavailable       [no_onshelf = 0 and status <> #onreserve]
+            onreserve         [status = #onreserve]
+        transitions
+            newTitle ->  available     { create }
+            available -> unavailable { [no_onshelf = 1] borrow() }
+            available -> available   { [no_onshelf > 1] borrow() }
+            available -> available   { return() }
+            unavailable -> available { return() }
+            available -> onreserve     { reserve() }
+            onreserve -> available     { unreserve() }
+            onreserve -> unavailable   { unreserve() }
+        end
+end
+
+class Copy
+    attributes
+        status : CopyStatus init = #onShelf
+    operations
+        return()
+        begin
+            self.status := #onShelf;
+            self.book.return()
+        end
+
+        reserve()
+        begin
+            self.status := #onReserve;
+            -- Note: We don't directly call book.reserve() here.
+            -- The book's reserve status might be managed independently
+            -- or triggered by the first copy being reserved.
+        end
+
+        borrow( m : Member)
+        begin
+            self.status := #onLoan;
+            self.book.borrow()
+        end
+
+        unreserve()
+        begin
+            self.status := #onShelf;
+            -- Similar to reserve, book unreserve might be handled differently
+        end
+
+    statemachines
+        psm States
+        states
+            newCopy : initial
+            onLoan
+            onShelf
+            onReserve
+        transitions
+            newCopy ->  onShelf     { create }
+            onShelf -> onLoan      { borrow() }
+            onLoan -> onShelf       { return() }
+            onShelf -> onReserve   { reserve()}
+            onReserve -> onLoan    { borrow() }
+            onReserve -> onShelf   { unreserve() }
+        end
+end
+
+class Member
+    attributes
+        name : String
+        address : String
+        no_onloan : Integer init = 0
+        status : String init = 'active'
+        fine : Integer init = 0
+    operations
+        okToBorrow() : Boolean
+        begin
+          if (self.no_onloan < 2 and self.fine = 0) then
+            result := true
+          else
+            result := false
+          end
+        end
+
+    okToReserve() : Boolean
+    begin
+      if (self.no_onloan < 2 and self.fine = 0) then
+            result := true
+          else
+            result := false
+          end
+        end
+
+        borrow(c : Copy)
+        begin
+            declare ok : Boolean;
+            ok := self.okToBorrow();
+            if( ok ) then
+                insert (self, c) into HasBorrowed;
+                self.no_onloan := self.no_onloan + 1;
+                c.borrow(self)
+            end
+        end
+
+        return(c : Copy)
+        begin
+            delete (self, c) from HasBorrowed;
+            self.no_onloan := self.no_onloan - 1;
+            c.return()
+        end
+
+        reserve(b : Book)
+        begin
+            if (b.status = #available) then
+                insert (self, b) into Reserves;
+                b.reserve(); -- Set the book's status to onreserve
+            else
+                -- Reservation not allowed, no changes made
+            end
+        end
+
+        unreserve(b: Book)
+        begin
+            delete (self, b) from Reserves;
+            b.unreserve();
+        end
+
+    payFine(amount : Integer)
+    begin
+        if (amount >= self.fine) then
+            self.fine := 0;
+            -- Optionally, you can record the fine amount
+        else
+            self.fine := self.fine - amount;
+        end
+    end
+
+    addFine(amount : Integer)
+    begin
+        self.fine := self.fine + amount;
+    end
+end
+
+association HasBorrowed between
+    Member[0..1] role borrower
+    Copy[*] role borrowed
+end
+
+association CopyOf between
+    Copy[1..*] role copies
+    Book[1] role book
+end
+
+association Reserves between
+    Member[*] role reservingMember
+    Book[*] role reservedBook
+end
+
+constraints
+
+context Member::borrow(c:Copy)
+    pre limit: self.no_onloan < 2
+    pre cond1: self.borrowed->excludes(c)
+    post cond2: self.borrowed->includes(c)
+
+context Book::borrow()
+    pre cond1: self.no_copies > 0
+
+context Copy
+    inv statusInv: self.status = #onShelf or self.status = #onLoan or self.status = #onReserve
+
+context Member
+    inv forbidden: self.borrowed.book->excludes('WanddP')

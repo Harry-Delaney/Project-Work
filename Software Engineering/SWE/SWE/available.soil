@@ -1,0 +1,6 @@
+!new Member('david')
+!new Book('cosmos')
+!cosmos.no_copies := 1
+!cosmos.no_onshelf := 1
+!cosmos.status := #available
+!david.reserve(cosmos)

@@ -1,0 +1,6 @@
+!new Member('eve')
+!new Book('odyssey')
+!odyssey.no_copies := 2
+!odyssey.no_onshelf := 0
+!odyssey.status := #unavailable
+!eve.reserve(odyssey)

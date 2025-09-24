@@ -1,0 +1,11 @@
+!new Member('bob')
+!bob.no_onloan := 0
+
+!new Book('moby')
+!moby.title := 'Moby Dick'
+!moby.author := 'Melville'
+!moby.no_copies := 1
+!moby.no_onshelf := 0
+!moby.status := #unavailable
+
+!bob.reserve(moby)

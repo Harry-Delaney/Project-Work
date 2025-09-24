@@ -1,0 +1,75 @@
+model LibrarySystem
+
+class Book
+    attributes
+        title : String
+        author : String
+        no_copies : Integer
+        no_onshelf : Integer;
+    operations
+        borrow() : Boolean;
+        begin
+            if self.no_onshelf > 0 then
+                self.no_onshelf := self.no_onshelf - 1; 
+                return true;
+            else
+                return false;
+            endif;
+
+end
+
+class Copy 
+    attributes
+        status : String;
+    operations
+        borrow(m : Member) : Boolean;
+        begin
+            if self.status = 'available' then
+                self.status := 'borrowed';  -- Change the status to 'borrowed'
+                m.no_onloan := m.no_onloan + 1;  -- Increment the number of books the member has on loan
+                self.book.borrow();  -- Call borrow() on the Book to update no_onshelf
+                return true;
+            else
+                return false;  -- If the copy is already borrowed, return false
+            endif;
+        end
+end
+
+class Member
+    attributes
+        name : String
+        student_id : String
+        address : String
+        no_onloan : Integer
+        fine : Integer;
+    operations
+        okToBorrow() : Boolean
+        begin
+            if self.no_onloan < 2 then
+                return true;
+            else
+                return false;
+            endif;
+        end
+        borrow(c : Copy)
+        begin
+        declare ok : Boolean;
+        ok := self.okToBorrow();
+        if ok then
+                self.no_onloan := self.no_onloan + 1;  -- Increment the number of books the member has on loan
+                c.borrow(self);  -- Send a borrow message to the Copy to process the borrowing
+            endif;
+        end 
+end
+
+association CopyOf between
+    Copy [1..*] role copies
+    Book [1] role book
+end
+
+association HasBorrowed between
+    Member [0..1] role borrower
+    Copy [*] role borrowed
+end
+
+constraints

@@ -1,0 +1,203 @@
+model Library
+
+
+enum BookStatus { available, unavailable, damaged}
+enum CopyStatus { onLoan, onShelf, onReserve, damaged}
+
+class Book
+    attributes
+        title : String
+        author : String
+        no_copies : Integer init = 2
+        no_damaged : Integer init = 0
+
+    operations
+        reportDamagedCopy() begin
+            self.no_damaged := self.no_damaged + 1;
+        end
+
+        repairDamagedCopy() begin
+            if (self.no_damaged > 0) then
+                self.no_damaged := self.no_damaged - 1;
+            end
+        end
+end
+
+class Copy
+    attributes
+        status : CopyStatus init = #onShelf
+    operations
+        return()
+        begin
+            if (self.status <> #damaged) then
+                self.status := #onShelf;
+            end if;
+        end;
+
+        reserve()
+        begin
+            if (self.status = #onShelf) then
+                self.status := #onReserve;
+            end if;
+        end;
+
+        borrow( m : Member)
+        begin
+            if (self.status = #onShelf or self.status = #onReserve) then
+                self.status := #onLoan;
+                insert (m, self) into HasBorrowed;
+                m.no_onloan := m.no_onloan + 1;
+            end if;
+        end;
+
+        unreserve()
+        begin
+            if (self.status = #onReserve) then
+                self.status := #onShelf;
+            end if;
+        end;
+
+        reportDamaged()
+        begin
+            self.status := #damaged;
+            self.book.reportDamagedCopy();
+            delete (any m: Member, self) from HasBorrowed;
+            if (self.status@pre = #onLoan) then
+                m.no_onloan := m.no_onloan - 1;
+            end if;
+        end;
+
+        repair()
+        begin
+            if (self.status = #damaged) then
+                self.status := #onShelf;
+                self.book.repairDamagedCopy();
+            end if;
+        end;
+
+    statemachines
+        psm States
+        states
+            newCopy : initial
+            onLoan      [status = #onLoan]
+            onShelf     [status = #onShelf]
+            onReserve   [status = #onReserve]
+            damaged     [status = #damaged]
+        transitions
+            newCopy ->  onShelf     { create }
+            onShelf -> onLoan      { borrow() }
+            onReserve -> onLoan    { borrow() }
+            onLoan -> onShelf       { return() }
+            onShelf -> onReserve   { reserve()}
+            onReserve -> onShelf   { unreserve() }
+            onShelf -> damaged     { reportDamaged() }
+            onLoan -> damaged      { reportDamaged() }
+            onReserve -> damaged    { reportDamaged() }
+            damaged -> onShelf     { repair() }
+        end
+end
+
+class Member
+    attributes
+        name : String
+        address : String
+        no_onloan : Integer init = 0
+        status : String init = 'active'
+        fine : Integer init = 0
+    operations
+        okToBorrow() : Boolean
+        begin
+          if (self.no_onloan < 2 and self.fine = 0) then
+            result := true;
+          else
+            result := false;
+          end if;
+        end;
+
+        okToReserve(c: Copy) : Boolean
+        begin
+          if (self.no_onloan < 2 and self.fine = 0 and c.status = #onShelf) then
+            result := true;
+          else
+            result := false;
+          end if;
+        end;
+
+        borrow(c : Copy)
+        begin
+            declare ok : Boolean;
+            ok := self.okToBorrow();
+            if( ok and c.status <> #damaged and c.status <> #onLoan) then
+                c.borrow(self);
+            end if;
+        end;
+
+        return(c : Copy)
+        begin
+            delete (self, c) from HasBorrowed;
+            self.no_onloan := self.no_onloan - 1;
+            c.return();
+        end;
+
+        reserve(c : Copy)
+        begin
+            declare ok : Boolean;
+            ok := self.okToReserve(c);
+            if (ok) then
+                insert (self, c) into Reserves;
+                c.reserve();
+            end if;
+        end;
+
+        unreserve(c: Copy)
+        begin
+            delete (self, c) from Reserves;
+            c.unreserve();
+        end;
+
+        payFine(amount : Integer)
+        begin
+            if (amount >= self.fine) then
+                self.fine := 0;
+            else
+                self.fine := self.fine - amount;
+            end if;
+        end;
+
+        addFine(amount : Integer)
+        begin
+            self.fine := self.fine + amount;
+        end if;
+end
+
+association HasBorrowed between
+    Member[0..1] role borrower
+    Copy[*] role borrowed
+end
+
+association CopyOf between
+    Copy[1..*] role copies
+    Book[1] role book
+end
+
+association Reserves between
+    Member[*] role reservingMember
+    Copy[*] role reservedCopy
+end
+
+constraints
+
+context Member::borrow(c:Copy)
+    pre limit: self.no_onloan < 2
+    pre cond1: self.borrowed->excludes(c)
+    post cond2: self.borrowed->includes(c)
+
+context Copy
+    inv statusInv: self.status = #onShelf or self.status = #onLoan or self.status = #onReserve or self.status = #damaged
+
+context Member::reserve(c: Copy)
+    pre notReserved: self.reservedCopy->excludes(c)
+    post isReserved: self.reservedCopy->includes(c)
+
+context Member
+    inv forbidden: self.borrowed.book->excludes('WanddP')
