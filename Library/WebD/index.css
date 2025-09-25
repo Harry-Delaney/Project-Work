@@ -1,0 +1,139 @@
+/* Ensure global box sizing */
+* { 
+    box-sizing: border-box; 
+}
+
+/* Set the background image and ensure it covers the page */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    /*background: url('images/LibraryIndex.jpg') no-repeat center center fixed;*/ /* Ensure image path is correct */
+    background-size: cover;  /* Make sure the image covers the entire page */
+    color: white; /* Make text white on top of the background */
+    font-family: Arial, sans-serif;
+}
+
+/* Restrict the header to the top of the page */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000; /* Ensure the header stays on top */
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 20px; /* Font size for header */
+    letter-spacing: 2px; /* Slightly spread out the header text */
+}
+
+/* Ensure main content has proper spacing */
+main {
+    margin-top: 80px; /* Add space for header */
+    padding: 40px;
+    text-align: center;
+}
+
+/* Style buttons for index page */
+.index-btn {
+    background-color: #04AA6D; /* Green color for buttons */
+    color: white;
+    padding: 10px 20px; /* Adjusted padding to make buttons more compact */
+    margin: 10px; /* Space around buttons */
+    border: none;
+    cursor: pointer;
+    font-size: 14px; /* Slightly smaller font size */
+    opacity: 0.9;
+    text-align: center;
+    outline: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow */
+    width: auto;
+    border-radius: 8px; /* Rounded corners */
+    display: inline-block; /* Ensure buttons don't span the full width */
+}
+
+/* Button hover effect */
+.index-btn:hover {
+    opacity: 1;
+    background-color: #037C54; /* Darker green on hover */
+}
+
+/* Remove focus border or outline */
+.index-btn:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 173, 255, 0.8); /* Blue glow effect */
+}
+
+/* Center form elements (buttons, etc.) */
+form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Stack buttons vertically */
+    margin-top: 30px;
+}
+
+/* Style input fields for index page */
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0 20px 0;
+    border: none;
+    background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    outline: none;
+    border-radius: 8px; /* Rounded corners */
+}
+
+/* Input fields focus effect */
+input[type=text]:focus, input[type=password]:focus {
+    background-color: #ddd;
+}
+
+/* Style links for index page */
+a {
+    color: #3498db; /* Blue color for links */
+    text-decoration: none; /* Remove underline */
+}
+
+a:hover {
+    color: #2980b9; /* Darker blue on hover */
+}
+
+/* Sign-in section styling */
+.signin {
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+    text-align: center;
+    padding: 30px;
+    margin-top: 50px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Soft shadow for the box */
+}
+
+/* Footer styling for index page */
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+    z-index: 1000;
+}
+
+/* Pagination button styles for index page */
+.pagination a {
+    padding: 10px 20px;
+    background-color: #3498db; /* Blue for pagination buttons */
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.pagination a:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}

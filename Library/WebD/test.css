@@ -1,0 +1,100 @@
+/* Style for the container */
+.container {
+    padding: 16px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Style for the Login link at the bottom */
+.signin {
+    background-color: #f1f1f1;
+    text-align: center;
+    margin-top: 20px; /* Ensures proper spacing from the register button */
+}
+
+/* Link styling */
+.signin a {
+    color: dodgerblue;
+    text-decoration: none;
+}
+
+.signin a:hover {
+    text-decoration: underline;
+}
+
+/* Style for input fields */
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    display: inline-block;
+    border: none;
+    background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+    background-color: #ddd;
+    outline: none;
+}
+
+/* Button styling */
+.registerbtn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+}
+
+.registerbtn:hover {
+    opacity: 1;
+}
+
+.loginbtn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+}
+
+.loginbtn:hover {
+    opacity: 1;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+    z-index: 1000;
+}
+
+
+/* Pagination button styles for index page */
+.pagination a {
+    padding: 10px 20px;
+    background-color: #3498db; /* Blue for pagination buttons */
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.pagination a:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+
+.pagination .next {
+    margin-top: 20px; /* Adds extra space above the 'Next' button */
+}
